@@ -68,7 +68,7 @@ $(document).ready(() => {
               type="range" 
               min="0" 
               max="999999999"
-              style="display: block;"
+              style="display: block; width: 100%;"
               value=0
               onchange="changeSlider($(this), $(this).prev())"/>`
             );
@@ -447,8 +447,8 @@ $(document).ready(() => {
             .css("border", "none")
             .css("font-size", "large")
             .addClass("numinput")
-            .val(0).after(`<button onclick="prevDigit()">prev</button> 
-            <button onclick="nextDigit()">next</button>
+            .val(0).after(`<br/><button onclick="prevDigit()">prev</button> 
+            <button onclick="nextDigit()">next</button><br /> <br />
             <div class="pi" style="font-size: large; word-wrap: break-word; max-width: 90vw;"></div>`);
           document.addEventListener("copy", function(e) {
             navigator.clipboard
