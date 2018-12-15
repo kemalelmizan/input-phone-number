@@ -16,6 +16,7 @@ $(document).ready(() => {
           "input_phone_number_enabled",
           items["input_phone_number_level"]
         );
+        console.log(items["input_phone_number_level"] === 1);
         $('input[type="number"]')
           .attr("disabled", "disabled")
           .css("border", "none")
@@ -29,7 +30,8 @@ $(document).ready(() => {
           max="9999999999999"
           style="display: block;"
           value=0
-          onchange="changeSlider($(this), $(this).prev())"/>`
+          onchange="changeSlider($(this), $(this).prev())"/>
+          `
           );
       }
     }
