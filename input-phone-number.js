@@ -448,7 +448,7 @@ $(document).ready(() => {
             .addClass("numinput")
             .val(0).after(`<br/><button onclick="prevDigit()">prev</button> 
             <button onclick="nextDigit()">next</button><br /> <br />
-            <div class="pi" style="font-size: large; word-wrap: break-word; max-width: 90vw;"></div>`);
+            <div class="pi" style="font-size: large; word-wrap: break-word; width: 90vw; margin: auto;"></div>`);
           document.addEventListener("copy", function(e) {
             navigator.clipboard
               .readText()
@@ -478,27 +478,170 @@ $(document).ready(() => {
           );
         } else if (items["input_phone_number_level"] == 4) {
           // tetris
-          $("head").append(
-            '<link rel="stylesheet" type="text/css" href="./tetris/style.css">'
-          );
-          $("head").append('<script src="./tetris/tetris.js">');
-
           $('input[type="number"]')
             .attr("disabled", "disabled")
             .attr("type", "text")
             .css("border", "none")
-            .css("font-size", "large")
+            .css("font-size", "40px")
             .addClass("numinput")
-            .val(0).after(`<div id="tetris">
-                          <div id="info">
-                            <div id="next_shape">asdfasdf</div>
-                            <p id="level">Level: <span></span></p>
-                            <p id="lines">Lines: <span></span></p>
-                            <p id="score">Score: <span></span></p>
-                            <p id="time">Time: <span></span></p>
-                          </div>
-                          <div id="canvas"></div>
-                        </div>`);
+            .val(0)
+            .after(
+              `<br/><canvas width=300 height=600 id='tetriscan'></canvas>`
+            );
+          $(".numinput").val("");
+          setTimeout(() => {
+            canv = document.getElementById("tetriscan");
+            ctx = canv.getContext("2d");
+            tw = 10;
+            th = 20;
+            cc = 30;
+            x = 3;
+            y = -1;
+            tm = 0;
+            dwn = 0;
+            cell = [];
+            reset = () => {
+              for (r = 0; r < th; r++) {
+                cell[r] = [];
+                for (c = 0; c < tw; c++) {
+                  cell[r][c] = 0;
+                }
+              }
+            };
+            reset();
+            shape = [
+              "00000111",
+              "00000111",
+              "00010111",
+              "00010111",
+              "01000111",
+              "01000111",
+              "00000001",
+              "00000001"
+            ];
+            numbers = [
+              "111101101101111",
+              "001001001001001",
+              "111001111100111",
+              "111001111001111",
+              "101101111001001",
+              "111100111001111",
+              "111100111101111",
+              "111001001001001",
+              "111101111101111",
+              "111101111001111"
+            ];
+            function gen() {
+              return "0000" + shape[Math.floor(Math.random() * 7)] + "0000";
+            }
+            csh = gen();
+            function dr(type, row) {
+              for (r = 0; r < th; r++) {
+                cnt = 0;
+                for (c = 0; c < tw; c++) {
+                  ctx.fillStyle = "#ddd";
+                  if (cell[r][c]) {
+                    ctx.fillStyle = "#000";
+                    cnt++;
+                  }
+                  ctx.fillRect(c * cc, r * cc, cc - 1, cc - 1);
+                  if (type == 2 && th - r < row + 1)
+                    cell[th - r][c] = cell[th - r - 1][c];
+                }
+                if (cnt == tw) {
+                  for (c = 0; c < tw; c++) cell[r][c] = 0;
+                  dr(2, r);
+                }
+              }
+            }
+            function chk(type, n = 0) {
+              out = "";
+              fnd = 0;
+              for (r = 0; r < 4; r++)
+                for (c = 0; c < 4; c++) {
+                  if (csh[c + r * 4] == 1) {
+                    if (type == 1) {
+                      ctx.fillStyle = "#000";
+                      ctx.fillRect(
+                        c * cc + x * cc,
+                        r * cc + y * cc,
+                        cc - 1,
+                        cc - 1
+                      );
+                    }
+                    if (type == 2)
+                      if (r + y > th - 2 || cell[r + y + 1][c + x] == 1) {
+                        chk(3);
+                        csh = gen();
+                        x = 3;
+                        y = -1;
+                        dwn = 0;
+                      }
+                    if (type == 3) cell[r + y][c + x] = 1;
+                    if (type == 5)
+                      if ((c + x > tw - 2 && n == 1) || (c + x < 1 && n == -1))
+                        fnd = 1;
+                  }
+                  if (type == 4) out += csh[r + (3 - c) * 4];
+                }
+              csh = type == 4 ? out : csh;
+              if (!fnd) x += n;
+            }
+            rnCheck = 0;
+            function game() {
+              if (rnCheck >= 2) {
+                rnCheck = 0;
+              } else {
+                rnCheck++;
+              }
+              // rnCheck = Math.floor(Math.random() * 7);
+              checkingNum = cell[15]
+                .slice(rnCheck * 3, rnCheck * 3 + 3)
+                .concat(cell[16].slice(rnCheck * 3, rnCheck * 3 + 3))
+                .concat(cell[17].slice(rnCheck * 3, rnCheck * 3 + 3))
+                .concat(cell[18].slice(rnCheck * 3, rnCheck * 3 + 3))
+                .concat(cell[19].slice(rnCheck * 3, rnCheck * 3 + 3));
+              for (i = 0; i < numbers.length; i++) {
+                if (
+                  JSON.stringify(checkingNum) ===
+                  JSON.stringify(numbers[i].split("").map(Number))
+                ) {
+                  console.log(i);
+                  $(".numinput").val($(".numinput").val() + i);
+                  reset();
+                }
+              }
+              tm++;
+              if (tm > 20 || dwn) {
+                y++;
+                tm = 0;
+                chk(2);
+              }
+              dr(1, 0);
+              chk(1);
+            }
+            setInterval(game, 33);
+            function trigger(evt) {
+              switch (evt.keyCode) {
+                case 37:
+                  chk(5, -1);
+                  break;
+                case 38:
+                  chk(4);
+                  break;
+                case 39:
+                  chk(5, 1);
+                  break;
+                case 40:
+                  dwn = 1;
+                  break;
+                case 82:
+                  reset();
+                  break;
+              }
+            }
+            document.addEventListener("keydown", trigger);
+          }, 2000);
         } else if (items["input_phone_number_level"] == 5) {
           // camera
           $('input[type="number"]')
