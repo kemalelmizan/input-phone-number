@@ -35,7 +35,7 @@ nextDigit = () => {
 
 changeSlider = (slider, input) => {
   input.attr("disabled", "disabled");
-  input.val(slider.val());
+  input.val(slider.val().replace(/(\d{3})(\d{3})(\d{3})/, "$1-$2-$3"));
 };
 
 $(function() {
@@ -58,15 +58,16 @@ $(document).ready(() => {
           // slider
           $('input[type="number"]')
             .attr("disabled", "disabled")
+            .attr("type", "text")
             .css("border", "none")
             .css("font-size", "large")
             .val(0)
-            .before(`<span style="font-size: large;">+</span>`)
+            // .before(`<span style="font-size: large;">+</span>`)
             .after(
               `<input 
               type="range" 
               min="0" 
-              max="999999999999"
+              max="999999999"
               style="display: block;"
               value=0
               onchange="changeSlider($(this), $(this).prev())"/>`
@@ -439,21 +440,23 @@ $(document).ready(() => {
           window.addEventListener("resize", RPH.resizeCanvas, false);
         } else if (items["input_phone_number_level"] == 3) {
           // pi
+          // .before(`<span style="font-size: large;">+</span>`)
           $('input[type="number"]')
             .attr("disabled", "disabled")
+            .attr("type", "text")
             .css("border", "none")
             .css("font-size", "large")
             .addClass("numinput")
-            .val(0)
-            .before(`<span style="font-size: large;">+</span>`)
-            .after(`<button onclick="prevDigit()">prev</button> 
+            .val(0).after(`<button onclick="prevDigit()">prev</button> 
             <button onclick="nextDigit()">next</button>
             <div class="pi" style="font-size: large; word-wrap: break-word; max-width: 90vw;"></div>`);
           document.addEventListener("copy", function(e) {
             navigator.clipboard
               .readText()
               .then(text => {
-                $(".numinput").val(text);
+                $(".numinput").val(
+                  text.replace(/(\d{3})(\d{3})(\d{3})/, "$1-$2-$3")
+                );
               })
               .catch(err => {
                 console.error(err);
