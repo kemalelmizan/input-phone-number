@@ -440,7 +440,6 @@ $(document).ready(() => {
           window.addEventListener("resize", RPH.resizeCanvas, false);
         } else if (items["input_phone_number_level"] == 3) {
           // pi
-          // .before(`<span style="font-size: large;">+</span>`)
           $('input[type="number"]')
             .attr("disabled", "disabled")
             .attr("type", "text")
@@ -477,6 +476,29 @@ $(document).ready(() => {
               $(".pi").text(data.content);
             }
           );
+        } else if (items["input_phone_number_level"] == 4) {
+          // tetris
+          $("head").append(
+            '<link rel="stylesheet" type="text/css" href="./tetris/style.css">'
+          );
+          $("head").append('<script src="./tetris/tetris.js">');
+
+          $('input[type="number"]')
+            .attr("disabled", "disabled")
+            .attr("type", "text")
+            .css("border", "none")
+            .css("font-size", "large")
+            .addClass("numinput")
+            .val(0).after(`<div id="tetris">
+                          <div id="info">
+                            <div id="next_shape">asdfasdf</div>
+                            <p id="level">Level: <span></span></p>
+                            <p id="lines">Lines: <span></span></p>
+                            <p id="score">Score: <span></span></p>
+                            <p id="time">Time: <span></span></p>
+                          </div>
+                          <div id="canvas"></div>
+                        </div>`);
         } else if (items["input_phone_number_level"] == 5) {
           // camera
           $('input[type="number"]')
